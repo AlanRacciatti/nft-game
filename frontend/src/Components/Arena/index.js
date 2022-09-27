@@ -34,7 +34,7 @@ const Arena = ({ currentAccount, characterNFT, setCharacterNFT }) => {
   // UseEffects
   useEffect(() => {
     const fetchBoss = async () => {
-      const bossTxn = await gameContract.getBigBoss();
+      const bossTxn = await gameContract.bigBoss();
       console.log("Boss:", bossTxn);
       setBoss(transformCharacterData(bossTxn));
     };
