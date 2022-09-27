@@ -137,7 +137,7 @@ contract MyEpicGame is ERC721 {
                 charAttributes.name,
                 " -- NFT #: ",
                 Strings.toString(_tokenId),
-                '", "description": "This is an NFT that lets people play in the game Puffle Slayer!", "image": "',
+                '", "description": "This is an NFT that lets people play in the game Puffle Warriors! https://pufflewarriors.vercel.app", "image": "',
                 charAttributes.imageURI,
                 '", "attributes": [ { "trait_type": "Health Points", "value": ',
                 strHp,
