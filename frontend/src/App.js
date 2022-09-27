@@ -6,6 +6,7 @@ import { ethers } from "ethers";
 import SelectCharacter from "./Components/SelectCharacter";
 import Arena from "./Components/Arena";
 import twitterLogo from "./assets/twitter-logo.svg";
+import LoadingIndicator from "./Components/LoadingIndicator";
 
 // Constants
 const TWITTER_HANDLE = "_buildspace";
@@ -17,7 +18,9 @@ const App = () => {
   // State
   const [currentAccount, setCurrentAccount] = useState(null);
   const [characterNFT, setCharacterNFT] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
+  // Actions
   // Actions
   const checkIfWalletIsConnected = async () => {
     try {
@@ -25,6 +28,10 @@ const App = () => {
 
       if (!ethereum) {
         console.log("Make sure you have MetaMask!");
+        /*
+         * We set isLoading here because we use return in the next line
+         */
+        setIsLoading(false);
         return;
       } else {
         console.log("We have the ethereum object", ethereum);
@@ -42,13 +49,18 @@ const App = () => {
     } catch (error) {
       console.log(error);
     }
+    /*
+     * We release the state property after all the function logic
+     */
+    setIsLoading(false);
   };
 
   // Render Methods
   const renderContent = () => {
-    /*
-     * Scenario #1
-     */
+    if (isLoading) {
+      return <LoadingIndicator />;
+    }
+
     if (!currentAccount) {
       return (
         <div className="connect-wallet-container">
@@ -109,20 +121,23 @@ const App = () => {
     }
   };
 
-  useEffect(async () => {
-    checkIfWalletIsConnected();
-
-    const checkNetwork = async () => {
-      try {
-        console.log(window.ethereum.networkVersion);
-        if (window.ethereum.networkVersion !== "80001") {
-          alert("Please connect to Mumbai!");
-        }
-      } catch (error) {
-        console.log(error);
+  const checkNetwork = async () => {
+    try {
+      console.log(window.ethereum.networkVersion);
+      if (window.ethereum.networkVersion !== "80001") {
+        alert("Please connect to Mumbai!");
       }
-    };
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
+  useEffect(() => {
+    setIsLoading(true);
+    checkIfWalletIsConnected();
+  }, []);
+
+  useEffect(() => {
     const fetchNFTMetadata = async () => {
       console.log("Checking for Character NFT on address:", currentAccount);
 
@@ -134,13 +149,16 @@ const App = () => {
         signer
       );
 
-      const txn = await gameContract.checkIfUserHasNFT();
-      if (txn.name) {
+      const characterNFT = await gameContract.checkIfUserHasNFT();
+      if (characterNFT.name) {
         console.log("User has character NFT");
-        setCharacterNFT(transformCharacterData(txn));
-      } else {
-        console.log("No character NFT found");
+        setCharacterNFT(transformCharacterData(characterNFT));
       }
+
+      /*
+       * Once we are done with all the fetching, set loading state to false
+       */
+      setIsLoading(false);
     };
 
     if (currentAccount) {
