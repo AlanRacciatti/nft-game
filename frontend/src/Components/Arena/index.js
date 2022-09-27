@@ -7,7 +7,7 @@ import "./Arena.css";
 /*
  * We pass in our characterNFT metadata so we can show a cool card in our UI
  */
-const Arena = ({ characterNFT }) => {
+const Arena = ({ currentAccount, characterNFT, setCharacterNFT }) => {
   // State
   const [gameContract, setGameContract] = useState(null);
   const [boss, setBoss] = useState(null);
@@ -60,9 +60,9 @@ const Arena = ({ characterNFT }) => {
           return { ...prevState, hp: playerHp };
         });
       } else {
-      /*
-       * If player isn't ours, update boss Hp only
-       */
+        /*
+         * If player isn't ours, update boss Hp only
+         */
         setBoss((prevState) => {
           return { ...prevState, hp: bossHp };
         });
