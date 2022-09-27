@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import "./App.css";
 import { ethers } from "ethers";
 import SelectCharacter from "./Components/SelectCharacter";
+import Arena from "./Components/Arena";
 import twitterLogo from "./assets/twitter-logo.svg";
 
 // Constants
@@ -63,11 +64,15 @@ const App = () => {
           </button>
         </div>
       );
-      /*
-       * Scenario #2
-       */
     } else if (currentAccount && !characterNFT) {
       return <SelectCharacter setCharacterNFT={setCharacterNFT} />;
+      /*
+       * If there is a connected wallet and characterNFT, it's time to battle!
+       */
+    } else if (currentAccount && characterNFT) {
+      return (
+        <Arena characterNFT={characterNFT} setCharacterNFT={setCharacterNFT} />
+      );
     }
   };
 
