@@ -27,7 +27,7 @@ contract MyEpicGame is ERC721 {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
-    CharacterAttributes[] public defaultCharacters;
+    CharacterAttributes[] defaultCharacters;
 
     // We create a mapping from the nft's tokenId => that NFTs attributes.
     mapping(uint256 => CharacterAttributes) public nftHolderAttributes;
@@ -45,6 +45,17 @@ contract MyEpicGame is ERC721 {
     // A mapping from an address => the NFTs tokenId. Gives me an ez way
     // to store the owner of the NFT and reference it later.
     mapping(address => uint256) public nftHolders;
+
+    event CharacterNFTMinted(
+        address sender,
+        uint256 tokenId,
+        uint256 characterIndex
+    );
+    event AttackComplete(
+        address sender,
+        uint256 newBossHp,
+        uint256 newPlayerHp
+    );
 
     constructor(
         string[] memory characterNames,
@@ -176,6 +187,7 @@ contract MyEpicGame is ERC721 {
 
         // Increment the tokenId for the next person that uses it.
         _tokenIds.increment();
+        emit CharacterNFTMinted(msg.sender, newItemId, _characterIndex);
     }
 
     function attackBoss() public {
@@ -224,6 +236,8 @@ contract MyEpicGame is ERC721 {
         // Console for ease.
         console.log("Player attacked boss. New boss hp: %s", bigBoss.hp);
         console.log("Boss attacked player. New player hp: %s\n", player.hp);
+
+        emit AttackComplete(msg.sender, bigBoss.hp, player.hp);
     }
 
     function checkIfUserHasNFT()
@@ -242,5 +256,13 @@ contract MyEpicGame is ERC721 {
             CharacterAttributes memory emptyStruct;
             return emptyStruct;
         }
+    }
+
+    function getAllDefaultCharacters()
+        public
+        view
+        returns (CharacterAttributes[] memory characters)
+    {
+        return defaultCharacters;
     }
 }
